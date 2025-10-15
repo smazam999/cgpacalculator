@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIU CGPA Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #1a2a6c;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .input-section, .result-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #1a2a6c;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #1a2a6c;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 5px rgba(26, 42, 108, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #calculateBtn {
+            background-color: #1a2a6c;
+            color: white;
+        }
+
+        #addRowBtn, #addSubjectBtn {
+            background-color: #fdbb2d;
+            color: #333;
+        }
+
+        #resetBtn {
+            background-color: #b21f1f;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cgpa-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .grade-description {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .grade-outstanding {
+            background-color: #4CAF50;
+        }
+
+        .grade-excellent {
+            background-color: #8BC34A;
+        }
+
+        .grade-verygood {
+            background-color: #CDDC39;
+            color: #333;
+        }
+
+        .grade-good {
+            background-color: #FFC107;
+            color: #333;
+        }
+
+        .grade-average {
+            background-color: #FF9800;
+        }
+
+        .grade-above-average {
+            background-color: #FF5722;
+        }
+
+        .grade-poor {
+            background-color: #F44336;
+        }
+
+        .grade-very-poor {
+            background-color: #9C27B0;
+        }
+
+        .grade-scale {
+            margin-top: 20px;
+        }
+
+        .grade-scale h3 {
+            margin-bottom: 10px;
+            color: #1a2a6c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grade-scale table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .grade-scale th {
+            background-color: #1a2a6c;
+            color: white;
+            padding: 12px;
+        }
+
+        .grade-scale td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .grade-scale tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .grade-scale tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .developer-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .developer-info h3 {
+            margin-bottom: 15px;
+            color: #fdbb2d;
+        }
+
+        .developer-info p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .contact-info h3 {
+            margin-bottom: 15px;
+            color: #fdbb2d;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-section {
+            display: none;
+        }
+
+        .mode-section.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .input-section, .result-section {
+                width: 100%;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .mode-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <style>
+            .logo {
+  text-align: center;
+  margin-bottom: 1.5rem; /* Creates space below the logo */
+}
+
+.logo img {
+  max-width: 400px; /* Adjust the size of the logo as needed */
+  height: auto; /* Maintains the aspect ratio */
+  border-radius: 0.5rem; /* Optional: gives the logo rounded corners */
+  background: rgba(255, 255, 255, 0.2); /* Optional: adds a subtle background */
+  padding: 0.5rem; /* Optional: adds some space around the logo image */
+}
+        </style>
+        <div class="logo">
+    <img src="images/diu.png" alt="DIU Logo">
+    </div>
+        <header>
+            <h1>DIU CGPA Calculator</h1>
+            <p>Track your journey, Calculate your progress, Achieve your goals.</p>
+        </header>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" id="semesterModeBtn">
+                <i class="fas fa-calendar-alt"></i> Semester-wise CGPA
+            </button>
+            <button class="mode-btn" id="subjectModeBtn">
+                <i class="fas fa-book"></i> Subject-wise CGPA
+            </button>
+        </div>
+
+        <div class="calculator-container">
+            <div class="input-section">
+                <!-- Semester-wise Input Section -->
+                <div class="mode-section active" id="semesterInput">
+                    <h2 class="section-title"><i class="fas fa-calculator"></i> Semester Results</h2>
+                    <table id="semesterTable">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Credit Hours</th>
+                                <th>SGPA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div class="buttons">
+                        <button id="addRowBtn"><i class="fas fa-plus"></i> Add Semester</button>
+                        <button id="calculateBtn"><i class="fas fa-calculator"></i> Calculate CGPA</button>
+                        <button id="resetBtn"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+
+                <!-- Subject-wise Input Section -->
+                <div class="mode-section" id="subjectInput">
+                    <h2 class="section-title"><i class="fas fa-book"></i> Subject Results</h2>
+                    <table id="subjectTable">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Credit Hours</th>
+                                <th>Grade</th>
+                                <th>Grade Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div class="buttons">
+                        <button id="addSubjectBtn"><i class="fas fa-plus"></i> Add Subject</button>
+                        <button id="calculateSubjectBtn"><i class="fas fa-calculator"></i> Calculate SGPA</button>
+                        <button id="resetSubjectBtn"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> CGPA Result</h2>
+                <div class="result-display">
+                    <p id="resultType">Your Cumulative GPA is:</p>
+                    <div class="cgpa-value" id="cgpaValue">0.00</div>
+                    <div class="grade-description" id="gradeDescription">Enter your semester results to calculate</div>
+                </div>
+                
+                <div class="grade-scale">
+                    <h3><i class="fas fa-graduation-cap"></i> Grading Scale</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CGPA Range</th>
+                                <th>Grade Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">4.00</td><td class="p-2">Outstanding</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">3.75 - 3.99</td><td class="p-2">Excellent</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">3.50 - 3.74</td><td class="p-2">Very Good</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">3.25 - 3.49</td><td class="p-2">Good</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">3.00 - 3.24</td><td class="p-2">Average</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">2.50 - 2.99</td><td class="p-2">Above Average</td></tr>
+                            <tr class="border-b border-gray-600/50"><td class="p-2">2.00 - 2.49</td><td class="p-2">Poor</td></tr>
+                            <tr><td class="p-2">0.00 - 1.99</td><td class="p-2">Very Poor</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="developer-info">
+                <h3>About this App</h3>
+                <p>The application is designed to help students accurately calculate their Cumulative Grade Point Average and understand their academic performance.</p>
+            </div>
+<div class="contact-info">
+    <style>
+        .contact-info h3 {
+    margin-bottom: 15px;
+    color: #fdbb2d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-info p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contact-info a {
+    color: #fdbb2d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-info a:hover {
+    color: white;
+    text-decoration: underline;
+    transform: translateX(5px);
+}
+
+.contact-info i {
+    width: 20px;
+    text-align: center;
+}
+    </style>
+    <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+    <p>
+        <a href="mailto:golam15-4654@diu.edu.bd">
+            <i class="fas fa-envelope"></i> Email
+        </a>
+    </p>
+    <p>
+        <a href="https://github.com/smazam999" target="_blank">
+            <i class="fab fa-github"></i> GitHub
+        </a>
+    </p>
+    <p>
+        <a href="https://www.linkedin.com/in/smazam999" target="_blank">
+            <i class="fab fa-linkedin"></i> LinkedIn
+        </a>
+    </p>
+</div>
+        </div>
+        <div class="copyright">
+            <p>© 2025 CGPA Calculator | Developed by <span class="dev-name">SM Golam Azam | Batch: CSE 61</span></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mode switching
+            const semesterModeBtn = document.getElementById('semesterModeBtn');
+            const subjectModeBtn = document.getElementById('subjectModeBtn');
+            const semesterInput = document.getElementById('semesterInput');
+            const subjectInput = document.getElementById('subjectInput');
+            const resultType = document.getElementById('resultType');
+            
+            semesterModeBtn.addEventListener('click', function() {
+                semesterModeBtn.classList.add('active');
+                subjectModeBtn.classList.remove('active');
+                semesterInput.classList.add('active');
+                subjectInput.classList.remove('active');
+                resultType.textContent = "Your Cumulative GPA is:";
+                resetCalculator();
+            });
+            
+            subjectModeBtn.addEventListener('click', function() {
+                subjectModeBtn.classList.add('active');
+                semesterModeBtn.classList.remove('active');
+                subjectInput.classList.add('active');
+                semesterInput.classList.remove('active');
+                resultType.textContent = "Your Semester GPA is:";
+                resetSubjectCalculator();
+            });
+
+            // Semester-wise calculation
+            const semesterTable = document.getElementById('semesterTable').getElementsByTagName('tbody')[0];
+            const addRowBtn = document.getElementById('addRowBtn');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const cgpaValue = document.getElementById('cgpaValue');
+            const gradeDescription = document.getElementById('gradeDescription');
+
+            // Subject-wise calculation
+            const subjectTable = document.getElementById('subjectTable').getElementsByTagName('tbody')[0];
+            const addSubjectBtn = document.getElementById('addSubjectBtn');
+            const calculateSubjectBtn = document.getElementById('calculateSubjectBtn');
+            const resetSubjectBtn = document.getElementById('resetSubjectBtn');
+
+            // Grade mapping for subject-wise calculation
+            const gradePoints = {
+                'A+': 4.00,
+                'A': 4.00,
+                'A-': 3.70,
+                'B+': 3.30,
+                'B': 3.00,
+                'B-': 2.70,
+                'C+': 2.30,
+                'C': 2.00,
+                'C-': 1.70,
+                'D+': 1.30,
+                'D': 1.00,
+                'F': 0.00
+            };
+
+            // Add initial rows for semester table
+            for (let i = 1; i <= 5; i++) {
+                addSemesterRow();
+            }
+
+            // Add initial rows for subject table
+            for (let i = 1; i <= 5; i++) {
+                addSubjectRow();
+            }
+
+            // Semester-wise functionality
+            addRowBtn.addEventListener('click', addSemesterRow);
+            calculateBtn.addEventListener('click', calculateCGPA);
+            resetBtn.addEventListener('click', resetCalculator);
+
+            // Subject-wise functionality
+            addSubjectBtn.addEventListener('click', addSubjectRow);
+            calculateSubjectBtn.addEventListener('click', calculateSubjectGPA);
+            resetSubjectBtn.addEventListener('click', resetSubjectCalculator);
+
+            function addSemesterRow() {
+                const rowCount = semesterTable.rows.length;
+                const row = semesterTable.insertRow();
+                
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                
+                cell1.innerHTML = rowCount + 1;
+                cell2.innerHTML = '<input type="number" step="0.01" min="0" placeholder="Credit Hours">';
+                cell3.innerHTML = '<input type="number" step="0.01" min="0" max="4.00" placeholder="SGPA">';
+            }
+
+            function addSubjectRow() {
+                const rowCount = subjectTable.rows.length;
+                const row = subjectTable.insertRow();
+                
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+                
+                cell1.innerHTML = '<input type="text" placeholder="Subject Name">';
+                cell2.innerHTML = '<input type="number" step="0.5" min="0" placeholder="Credit Hours">';
+                
+                // Create grade dropdown
+                const gradeSelect = document.createElement('select');
+                gradeSelect.innerHTML = `
+                    <option value="">Select Grade</option>
+                    <option value="A+">A+ (4.00)</option>
+                    <option value="A">A (4.00)</option>
+                    <option value="A-">A- (3.70)</option>
+                    <option value="B+">B+ (3.30)</option>
+                    <option value="B">B (3.00)</option>
+                    <option value="B-">B- (2.70)</option>
+                    <option value="C+">C+ (2.30)</option>
+                    <option value="C">C (2.00)</option>
+                    <option value="C-">C- (1.70)</option>
+                    <option value="D+">D+ (1.30)</option>
+                    <option value="D">D (1.00)</option>
+                    <option value="F">F (0.00)</option>
+                `;
+                cell3.appendChild(gradeSelect);
+                
+                // Grade points cell (auto-filled based on grade selection)
+                const gradePointsCell = document.createElement('span');
+                gradePointsCell.textContent = '0.00';
+                cell4.appendChild(gradePointsCell);
+                
+                // Update grade points when grade is selected
+                gradeSelect.addEventListener('change', function() {
+                    const selectedGrade = this.value;
+                    gradePointsCell.textContent = gradePoints[selectedGrade] || '0.00';
+                });
+            }
+
+            function calculateCGPA() {
+                let totalCreditHours = 0;
+                let totalGradePoints = 0;
+                let validRows = 0;
+                
+                for (let i = 0; i < semesterTable.rows.length; i++) {
+                    const creditInput = semesterTable.rows[i].cells[1].getElementsByTagName('input')[0];
+                    const sgpaInput = semesterTable.rows[i].cells[2].getElementsByTagName('input')[0];
+                    
+                    const creditHours = parseFloat(creditInput.value);
+                    const sgpa = parseFloat(sgpaInput.value);
+                    
+                    if (!isNaN(creditHours) && !isNaN(sgpa) && creditHours > 0 && sgpa >= 0 && sgpa <= 4.00) {
+                        totalCreditHours += creditHours;
+                        totalGradePoints += creditHours * sgpa;
+                        validRows++;
+                    }
+                }
+                
+                if (validRows > 0 && totalCreditHours > 0) {
+                    const cgpa = totalGradePoints / totalCreditHours;
+                    displayResult(cgpa);
+                } else {
+                    cgpaValue.textContent = "0.00";
+                    gradeDescription.textContent = "Please enter valid semester data";
+                    gradeDescription.className = "grade-description";
+                }
+            }
+
+            function calculateSubjectGPA() {
+                let totalCreditHours = 0;
+                let totalGradePoints = 0;
+                let validRows = 0;
+                
+                for (let i = 0; i < subjectTable.rows.length; i++) {
+                    const creditInput = subjectTable.rows[i].cells[1].getElementsByTagName('input')[0];
+                    const gradeSelect = subjectTable.rows[i].cells[2].getElementsByTagName('select')[0];
+                    const gradePointsCell = subjectTable.rows[i].cells[3].getElementsByTagName('span')[0];
+                    
+                    const creditHours = parseFloat(creditInput.value);
+                    const selectedGrade = gradeSelect.value;
+                    const gradePoint = parseFloat(gradePointsCell.textContent);
+                    
+                    if (!isNaN(creditHours) && creditHours > 0 && selectedGrade && !isNaN(gradePoint)) {
+                        totalCreditHours += creditHours;
+                        totalGradePoints += creditHours * gradePoint;
+                        validRows++;
+                    }
+                }
+                
+                if (validRows > 0 && totalCreditHours > 0) {
+                    const sgpa = totalGradePoints / totalCreditHours;
+                    displayResult(sgpa);
+                } else {
+                    cgpaValue.textContent = "0.00";
+                    gradeDescription.textContent = "Please enter valid subject data";
+                    gradeDescription.className = "grade-description";
+                }
+            }
+
+            function displayResult(gpa) {
+                cgpaValue.textContent = gpa.toFixed(2);
+                
+                // Determine grade description
+                if (gpa === 4.00) {
+                    gradeDescription.textContent = "Outstanding";
+                    gradeDescription.className = "grade-description grade-outstanding";
+                } else if (gpa >= 3.75) {
+                    gradeDescription.textContent = "Excellent";
+                    gradeDescription.className = "grade-description grade-excellent";
+                } else if (gpa >= 3.50) {
+                    gradeDescription.textContent = "Very Good";
+                    gradeDescription.className = "grade-description grade-verygood";
+                } else if (gpa >= 3.25) {
+                    gradeDescription.textContent = "Good";
+                    gradeDescription.className = "grade-description grade-good";
+                } else if (gpa >= 3.00) {
+                    gradeDescription.textContent = "Average";
+                    gradeDescription.className = "grade-description grade-average";
+                } else if (gpa >= 2.50) {
+                    gradeDescription.textContent = "Above Average";
+                    gradeDescription.className = "grade-description grade-above-average";
+                } else if (gpa >= 2.00) {
+                    gradeDescription.textContent = "Poor";
+                    gradeDescription.className = "grade-description grade-poor";
+                } else {
+                    gradeDescription.textContent = "Very Poor - You need to study";
+                    gradeDescription.className = "grade-description grade-very-poor";
+                }
+            }
+
+            function resetCalculator() {
+                for (let i = 0; i < semesterTable.rows.length; i++) {
+                    const creditInput = semesterTable.rows[i].cells[1].getElementsByTagName('input')[0];
+                    const sgpaInput = semesterTable.rows[i].cells[2].getElementsByTagName('input')[0];
+                    
+                    creditInput.value = '';
+                    sgpaInput.value = '';
+                }
+                
+                cgpaValue.textContent = "0.00";
+                gradeDescription.textContent = "Enter your semester results to calculate";
+                gradeDescription.className = "grade-description";
+            }
+
+            function resetSubjectCalculator() {
+                for (let i = 0; i < subjectTable.rows.length; i++) {
+                    const subjectInput = subjectTable.rows[i].cells[0].getElementsByTagName('input')[0];
+                    const creditInput = subjectTable.rows[i].cells[1].getElementsByTagName('input')[0];
+                    const gradeSelect = subjectTable.rows[i].cells[2].getElementsByTagName('select')[0];
+                    const gradePointsCell = subjectTable.rows[i].cells[3].getElementsByTagName('span')[0];
+                    
+                    subjectInput.value = '';
+                    creditInput.value = '';
+                    gradeSelect.value = '';
+                    gradePointsCell.textContent = '0.00';
+                }
+                
+                cgpaValue.textContent = "0.00";
+                gradeDescription.textContent = "Enter your subject results to calculate";
+                gradeDescription.className = "grade-description";
+            }
+        });
+    </script>
+</body>
+</html>
